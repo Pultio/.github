@@ -1,0 +1,16 @@
+name: Discord PR Notify
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to Discord
+        run: |
+          curl -sf -H "Content-Type: application/json" -d "$(jq -n \
+            --arg content "**New PR** in \`${{ github.repository }}\`: [${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }}) by ${{ github.event.pull_request.user.login }}" \
+            '{content: $content}')" \
+            "${{ secrets.DISCORD_WEBHOOK_URL }}"
